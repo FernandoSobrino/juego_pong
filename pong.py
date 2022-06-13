@@ -2,6 +2,9 @@ import pygame
 
 ALTO_PALETA = 80
 ANCHO_PALETA = 5
+ANCHO = 640
+ALTO = 480
+MARGEN_LATERAL = 30
 
 
 class Paleta(pygame.Rect):
@@ -10,14 +13,18 @@ class Paleta(pygame.Rect):
 
     def __init__(self,x,y):
         super(Paleta,self).__init__(x,y, ANCHO_PALETA,ALTO_PALETA)
-        self.velocidad = 3
+        self.velocidad = 4
 
     def mover_paleta(self,direccion):
         if direccion == self.ARRIBA:
             self.y = self.y - self.velocidad
+            if self.y < 0:
+                self.y = 0
         else:
             self.y = self.y + self.velocidad
-        pass
+            if self.y > ALTO - ALTO_PALETA:
+                self.y = ALTO - ALTO_PALETA
+        
 
 
 
@@ -26,9 +33,6 @@ class Linea(pygame.Rect):
 
 class Pong:
 
-    _ANCHO = 640
-    _ALTO = 480
-    _MARGEN_LATERAL = 30
     _ANCHO_RED = 5
     _COLOR_PANTALLA = (0,128,0)
     _COLOR_BLANCO = (255,255,255)
@@ -36,19 +40,21 @@ class Pong:
     def __init__(self):
         print("Construyendo un objeto pong")
         pygame.init()
-        self.pantalla = pygame.display.set_mode((self._ANCHO,self._ALTO))
+        self.pantalla = pygame.display.set_mode((ANCHO,ALTO))
+        self.clock = pygame.time.Clock()
         self.pantalla.fill(self._COLOR_PANTALLA)
+
         self.jugador1 = Paleta(
-            self._MARGEN_LATERAL,               #COORDENADA X (LEFT)
-            (self._ALTO-ALTO_PALETA)/2)         #COORDENADA Y (TOP)
+            MARGEN_LATERAL,               #COORDENADA X (LEFT)
+            (ALTO-ALTO_PALETA)/2)         #COORDENADA Y (TOP)
                                       
         
         self.jugador2 = Paleta(
-            self._ANCHO - self._MARGEN_LATERAL - ANCHO_PALETA,
-            (self._ALTO-ALTO_PALETA)/2)
+            ANCHO - MARGEN_LATERAL - ANCHO_PALETA,
+            (ALTO-ALTO_PALETA)/2)
            
 
-        self.linea = Linea(self._ANCHO/2,0,self._ANCHO_RED,self._ALTO)
+        self.linea = Linea(ANCHO/2,0,self._ANCHO_RED,ALTO)
 
     
 
@@ -57,8 +63,8 @@ class Pong:
         salir_juego = False
         while not salir_juego:
             eventos = pygame.event.get()
+            estado_teclas = pygame.key.get_pressed()
             for evento in eventos:
-                estado_teclas = pygame.key.get_pressed()
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_ESCAPE:
                         salir_juego = True
@@ -81,10 +87,10 @@ class Pong:
             pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.jugador2)
             #pygame.draw.rect(self.pantalla,self._BLANCO,self.linea)
 
-            for posicion in range(0, self._ALTO,45):
+            for posicion in range(0, ALTO,45):
                 pygame.draw.line(self.pantalla,self._COLOR_BLANCO,
-                                (self._ANCHO/2, posicion),
-                                (self._ANCHO/2,posicion + 25))
+                                (ANCHO/2, posicion),
+                                (ANCHO/2,posicion + 25))
                 
 
             #Dibujo del campo de tenis (molaría llevarlo a una función)
@@ -96,8 +102,9 @@ class Pong:
             pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(470,100),(470,380))
             pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(175,240),(470,240))
             
-
+            #Refresco de pantalla
             pygame.display.flip()
+            self.clock.tick(120)
             
             
 if __name__ == "__main__":
