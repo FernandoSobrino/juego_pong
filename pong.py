@@ -1,3 +1,4 @@
+from random import randint
 import pygame
 
 ALTO_PALETA = 80
@@ -5,7 +6,7 @@ ANCHO_PALETA = 5
 ANCHO = 640
 ALTO = 480
 MARGEN_LATERAL = 30
-
+TAMANIO_PELOTA = 6
 
 class Paleta(pygame.Rect):
     ARRIBA = True
@@ -26,10 +27,24 @@ class Paleta(pygame.Rect):
                 self.y = ALTO - ALTO_PALETA
         
 
+class Pelota(pygame.Rect):
+
+    def __init__(self):
+        super(Pelota,self).__init__((ANCHO-TAMANIO_PELOTA)/2,
+                                    (ALTO-TAMANIO_PELOTA)/2, 
+                                    TAMANIO_PELOTA,TAMANIO_PELOTA)
+    
+        self.velocidad_x = randint(-5,5)
+        self.velocidad_y = randint(-5,5)
+
+    def mover_pelota(self):
+        self.y = self.y + self.velocidad_x
+        self.x = self.x + self.velocidad_y
 
 
-class Linea(pygame.Rect):
-    pass
+
+#class Linea(pygame.Rect):
+    #pass
 
 class Pong:
 
@@ -52,9 +67,11 @@ class Pong:
         self.jugador2 = Paleta(
             ANCHO - MARGEN_LATERAL - ANCHO_PALETA,
             (ALTO-ALTO_PALETA)/2)
+
+        self.pelota = Pelota()
            
 
-        self.linea = Linea(ANCHO/2,0,self._ANCHO_RED,ALTO)
+        #self.linea = Linea(ANCHO/2,0,self._ANCHO_RED,ALTO)
 
     
 
@@ -79,22 +96,24 @@ class Pong:
                 self.jugador2.mover_paleta(Paleta.ARRIBA)
             if estado_teclas[pygame.K_DOWN]:
                     self.jugador2.mover_paleta(Paleta.ABAJO)
+            self.pelota.mover_pelota()
                 
             self.pantalla.fill(self._COLOR_PANTALLA)
                    
             
             pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.jugador1)
             pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.jugador2)
+            pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.pelota)
+            
+            
+            #Dibujo de la red
             #pygame.draw.rect(self.pantalla,self._BLANCO,self.linea)
-
             for posicion in range(0, ALTO,45):
                 pygame.draw.line(self.pantalla,self._COLOR_BLANCO,
                                 (ANCHO/2, posicion),
                                 (ANCHO/2,posicion + 25))
                 
-
             #Dibujo del campo de tenis (molaría llevarlo a una función)
-            
             pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,(70,45,500,390),2)
             pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,100),(567,100))
             pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,380),(567,380))
