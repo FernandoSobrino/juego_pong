@@ -87,7 +87,8 @@ class Pong:
                         salir_juego = True
                 if evento.type == pygame.QUIT:
                     salir_juego = True
-                
+        
+        #Aquí tenemos creados los eventos que tienen que ver con pulsaciones de teclado    
             if estado_teclas[pygame.K_a]:
                 self.jugador1.mover_paleta(Paleta.ARRIBA)
             if estado_teclas[pygame.K_z]:
@@ -97,7 +98,6 @@ class Pong:
             if estado_teclas[pygame.K_DOWN]:
                     self.jugador2.mover_paleta(Paleta.ABAJO)
             self.pelota.mover_pelota()
-                
             self.pantalla.fill(self._COLOR_PANTALLA)
                    
             
@@ -105,26 +105,25 @@ class Pong:
             pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.jugador2)
             pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.pelota)
             
-            
-            #Dibujo de la red
-            #pygame.draw.rect(self.pantalla,self._BLANCO,self.linea)
-            for posicion in range(0, ALTO,45):
-                pygame.draw.line(self.pantalla,self._COLOR_BLANCO,
-                                (ANCHO/2, posicion),
-                                (ANCHO/2,posicion + 25))
-                
-            #Dibujo del campo de tenis (molaría llevarlo a una función)
-            pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,(70,45,500,390),2)
-            pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,100),(567,100))
-            pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,380),(567,380))
-            pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(175,100),(175,380))
-            pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(470,100),(470,380))
-            pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(175,240),(470,240))
-            
+            #Dibujo del campo de tenis 
+            self.pintar_campo()
+
             #Refresco de pantalla
             pygame.display.flip()
             self.clock.tick(120)
-            
+
+    #Este es el método para el que luego llamamos para dibujar el campo
+    def pintar_campo(self):
+        for posicion in range(0, ALTO,45):
+                pygame.draw.line(self.pantalla,self._COLOR_BLANCO,
+                                (ANCHO/2, posicion),
+                                (ANCHO/2,posicion + 25))
+        pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,(70,45,500,390),2)
+        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,100),(567,100))
+        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,380),(567,380))
+        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(175,100),(175,380))
+        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(470,100),(470,380))
+        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(175,240),(470,240))
             
 if __name__ == "__main__":
     juego = Pong()
