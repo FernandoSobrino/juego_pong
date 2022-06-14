@@ -9,6 +9,7 @@ COLOR_BLANCO = (255,255,255)
 COLOR_PANTALLA = (0,128,0)
 FPS = 60
 MARGEN_LATERAL = 30
+PUNTOS_PARTIDA = 3
 TAMANIO_PELOTA = 6
 VEL_MAX_PELOTA = 5
 VELOCIDAD_PALETA = 5
@@ -56,7 +57,22 @@ class Pelota(pygame.Rect):
 
 class Marcador:
     def __init__(self):
+        self.inicializar()
+
+    def comprobar_ganador(self):
+        if self.partida_finalizada:
+            return True
+        if self.valor[0] == PUNTOS_PARTIDA:
+            print("Ha ganado el jugador 1")
+            self.partida_finalizada = True
+        elif self.valor[1] == PUNTOS_PARTIDA:
+            print("Ha ganado el jugador 2")
+            self.partida_finalizada = True
+        return self.partida_finalizada
+
+    def inicializar(self):
         self.valor = [0,0]
+        self.partida_finalizada = False
 
 class Pong:
 
@@ -104,11 +120,11 @@ class Pong:
                 self.jugador2.mover_paleta(Paleta.ARRIBA)
             if estado_teclas[pygame.K_DOWN]:
                     self.jugador2.mover_paleta(Paleta.ABAJO)
-            self.pelota.mover_pelota()
-
-            self.colision_paletas()
-
-            self.comprobar_punto()
+            
+            if not self.marcador.comprobar_ganador():
+                self.pelota.mover_pelota()
+                self.colision_paletas()
+                self.comprobar_punto()
 
             self.pantalla.fill(COLOR_PANTALLA)
                    
@@ -131,22 +147,23 @@ class Pong:
 
     def comprobar_punto(self):
             if self.pelota.x < 0:
-                self.pelota.x = (ANCHO - TAMANIO_PELOTA)/2
-                self.pelota.y = (ALTO - TAMANIO_PELOTA)/2
-                self.pelota.velocidad_x = 0
-                self.pelota.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
-                self.pelota.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
-                print("Punto para el jugador 2")
                 self.marcador.valor[1] = self.marcador.valor[1] + 1
                 print(f"El nuevo marcador es {self.marcador.valor}")
-            elif self.pelota.x > ANCHO:
-                self.pelota.x = (ANCHO - TAMANIO_PELOTA)/2
-                self.pelota.y = (ALTO - TAMANIO_PELOTA)/2
                 self.pelota.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
-                self.pelota.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
-                print("Punto para el jugador 1")
+                self.iniciar_punto()
+                
+            elif self.pelota.x > ANCHO:
                 self.marcador.valor[0] = self.marcador.valor[0] + 1
                 print(f"El nuevo marcador es {self.marcador.valor}")
+                self.pelota.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
+                self.iniciar_punto()
+                
+            self.marcador.comprobar_ganador()
+
+    def iniciar_punto(self):
+        self.pelota.x = (ANCHO - TAMANIO_PELOTA)/2
+        self.pelota.y = (ALTO - TAMANIO_PELOTA)/2
+        self.pelota.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
 
 
     def pintar_campo(self):
