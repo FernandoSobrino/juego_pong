@@ -1,14 +1,17 @@
 from random import randint
 import pygame
 
-COLOR_PANTALLA = (0,128,0)
-COLOR_BLANCO = (255,255,255)
-ALTO_PALETA = 80
-ANCHO_PALETA = 5
-ANCHO = 640
 ALTO = 480
+ALTO_PALETA = 80
+ANCHO = 640
+ANCHO_PALETA = 5
+COLOR_BLANCO = (255,255,255)
+COLOR_PANTALLA = (0,128,0)
+FPS = 60
 MARGEN_LATERAL = 30
 TAMANIO_PELOTA = 6
+VEL_MAX_PELOTA = 5
+VELOCIDAD_PALETA = 5
 
 class Paleta(pygame.Rect):
     ARRIBA = True
@@ -16,7 +19,7 @@ class Paleta(pygame.Rect):
 
     def __init__(self,x,y):
         super(Paleta,self).__init__(x,y, ANCHO_PALETA,ALTO_PALETA)
-        self.velocidad = 5
+        self.velocidad = VELOCIDAD_PALETA
 
     def mover_paleta(self,direccion):
         if direccion == self.ARRIBA:
@@ -35,8 +38,8 @@ class Pelota(pygame.Rect):
                                     (ALTO-TAMANIO_PELOTA)/2, 
                                     TAMANIO_PELOTA,TAMANIO_PELOTA)
     
-        self.velocidad_x = randint(-5,5)
-        self.velocidad_y = randint(-5,5)
+        self.velocidad_x = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
+        self.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
 
     def mover_pelota(self):
         self.y = self.y + self.velocidad_y
@@ -54,7 +57,6 @@ class Pelota(pygame.Rect):
 
 class Pong:
 
-    _ANCHO_RED = 5
     
     def __init__(self):
         print("Construyendo un objeto pong")
@@ -74,10 +76,6 @@ class Pong:
 
         self.pelota = Pelota()
            
-
-        #self.linea = Linea(ANCHO/2,0,self._ANCHO_RED,ALTO)
-
-    
 
     def bucle_principal(self):
         print("Estoy en el bucle principal")
@@ -118,7 +116,7 @@ class Pong:
 
             #Refresco de pantalla
             pygame.display.flip()
-            self.clock.tick(60)
+            self.clock.tick(FPS)
     
    
     """
@@ -127,8 +125,8 @@ class Pong:
     """
     def colision_paletas(self):
         if self.jugador1.colliderect(self.pelota) or self.jugador2.colliderect(self.pelota):
-            self.pelota.velocidad_x = -self.pelota.velocidad_x + randint(-1,1)
-            self.pelota.velocidad_y = randint(-5,5)
+            self.pelota.velocidad_x = -self.pelota.velocidad_x 
+            self.pelota.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
 
 
 
