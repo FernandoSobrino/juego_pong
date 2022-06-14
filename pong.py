@@ -38,7 +38,10 @@ class Pelota(pygame.Rect):
                                     (ALTO-TAMANIO_PELOTA)/2, 
                                     TAMANIO_PELOTA,TAMANIO_PELOTA)
     
-        self.velocidad_x = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
+        valido_posicion_x = False
+        while not valido_posicion_x:
+            self.velocidad_x = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
+            valido_posicion_x = self.velocidad_x != 0
         self.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
 
     def mover_pelota(self):
@@ -50,10 +53,6 @@ class Pelota(pygame.Rect):
         if self.y > ALTO - TAMANIO_PELOTA:          #PARA QUE LA BOLA NO SE SALGA DE ABAJO
             self.y = ALTO - TAMANIO_PELOTA
             self.velocidad_y = - self.velocidad_y
-
-
-#class Linea(pygame.Rect):
-    #pass
 
 class Pong:
 
