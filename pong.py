@@ -41,10 +41,10 @@ class Pelota(pygame.Rect):
     def mover_pelota(self):
         self.y = self.y + self.velocidad_y
         self.x = self.x + self.velocidad_x
-        if self.y < 0:
+        if self.y < 0:                              #PARA QUE LA BOLA NO SE SALGA DE ARRIBA
             self.y = 0
             self.velocidad_y = - self.velocidad_y
-        if self.y > ALTO - TAMANIO_PELOTA:
+        if self.y > ALTO - TAMANIO_PELOTA:          #PARA QUE LA BOLA NO SE SALGA DE ABAJO
             self.y = ALTO - TAMANIO_PELOTA
             self.velocidad_y = - self.velocidad_y
 
@@ -102,6 +102,10 @@ class Pong:
             if estado_teclas[pygame.K_DOWN]:
                     self.jugador2.mover_paleta(Paleta.ABAJO)
             self.pelota.mover_pelota()
+
+            self.colision_paletas()
+
+
             self.pantalla.fill(COLOR_PANTALLA)
                    
             #Dibujo de las dos palas y de la pelota
@@ -115,6 +119,18 @@ class Pong:
             #Refresco de pantalla
             pygame.display.flip()
             self.clock.tick(60)
+    
+   
+    """
+    Este es el método que comprueba la colisión de la pelota con una de las paletas
+    y si es así le cambia la dirección a la pelota
+    """
+    def colision_paletas(self):
+        if self.jugador1.colliderect(self.pelota) or self.jugador2.colliderect(self.pelota):
+            self.pelota.velocidad_x = -self.pelota.velocidad_x + randint(-1,1)
+            self.pelota.velocidad_y = randint(-5,5)
+
+
 
     #Este es el método para el que luego llamamos para dibujar el campo
     def pintar_campo(self):
