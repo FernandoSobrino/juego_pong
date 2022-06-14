@@ -108,6 +108,9 @@ class Pong:
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_ESCAPE:
                         salir_juego = True
+                    if evento.key == pygame.K_r:
+                        print("Nueva partida")
+                        self.marcador.inicializar()
                 if evento.type == pygame.QUIT:
                     salir_juego = True
         
