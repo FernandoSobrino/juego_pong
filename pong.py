@@ -54,6 +54,24 @@ class Pelota(pygame.Rect):
             self.y = ALTO - TAMANIO_PELOTA
             self.velocidad_y = - self.velocidad_y
 
+    def comprobar_punto(self):
+        if self.x < 0:
+            self.x = (ANCHO - TAMANIO_PELOTA)/2
+            self.y = (ALTO - TAMANIO_PELOTA)/2
+            self.velocidad_x = 0
+            self.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
+            self.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
+            print("Punto para el jugador 2")
+        elif self.x > ANCHO:
+            self.x = (ANCHO - TAMANIO_PELOTA)/2
+            self.y = (ALTO - TAMANIO_PELOTA)/2
+            self.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
+            self.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
+            print("Punto para el jugador 1")
+
+        
+
+
 class Pong:
 
     
@@ -102,6 +120,8 @@ class Pong:
 
             self.colision_paletas()
 
+            self.pelota.comprobar_punto()
+
 
             self.pantalla.fill(COLOR_PANTALLA)
                    
@@ -118,10 +138,7 @@ class Pong:
             self.clock.tick(FPS)
     
    
-    """
-    Este es el método que comprueba la colisión de la pelota con una de las paletas
-    y si es así le cambia la dirección a la pelota
-    """
+    
     def colision_paletas(self):
         if self.jugador1.colliderect(self.pelota) or self.jugador2.colliderect(self.pelota):
             self.pelota.velocidad_x = -self.pelota.velocidad_x 
@@ -129,8 +146,9 @@ class Pong:
 
 
 
-    #Este es el método para el que luego llamamos para dibujar el campo
+    
     def pintar_campo(self):
+        #Este es el método para el que luego llamamos para dibujar el campo
         for posicion in range(0, ALTO,50):
             pygame.draw.line(self.pantalla,COLOR_BLANCO,
                                 (ANCHO/2, posicion),
