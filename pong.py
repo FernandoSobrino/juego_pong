@@ -1,6 +1,8 @@
 from random import randint
 import pygame
 
+COLOR_PANTALLA = (0,128,0)
+COLOR_BLANCO = (255,255,255)
 ALTO_PALETA = 80
 ANCHO_PALETA = 5
 ANCHO = 640
@@ -14,7 +16,7 @@ class Paleta(pygame.Rect):
 
     def __init__(self,x,y):
         super(Paleta,self).__init__(x,y, ANCHO_PALETA,ALTO_PALETA)
-        self.velocidad = 4
+        self.velocidad = 5
 
     def mover_paleta(self,direccion):
         if direccion == self.ARRIBA:
@@ -26,7 +28,6 @@ class Paleta(pygame.Rect):
             if self.y > ALTO - ALTO_PALETA:
                 self.y = ALTO - ALTO_PALETA
         
-
 class Pelota(pygame.Rect):
 
     def __init__(self):
@@ -38,9 +39,14 @@ class Pelota(pygame.Rect):
         self.velocidad_y = randint(-5,5)
 
     def mover_pelota(self):
-        self.y = self.y + self.velocidad_x
-        self.x = self.x + self.velocidad_y
-
+        self.y = self.y + self.velocidad_y
+        self.x = self.x + self.velocidad_x
+        if self.y < 0:
+            self.y = 0
+            self.velocidad_y = - self.velocidad_y
+        if self.y > ALTO - TAMANIO_PELOTA:
+            self.y = ALTO - TAMANIO_PELOTA
+            self.velocidad_y = - self.velocidad_y
 
 
 #class Linea(pygame.Rect):
@@ -49,15 +55,13 @@ class Pelota(pygame.Rect):
 class Pong:
 
     _ANCHO_RED = 5
-    _COLOR_PANTALLA = (0,128,0)
-    _COLOR_BLANCO = (255,255,255)
-
+    
     def __init__(self):
         print("Construyendo un objeto pong")
         pygame.init()
         self.pantalla = pygame.display.set_mode((ANCHO,ALTO))
         self.clock = pygame.time.Clock()
-        self.pantalla.fill(self._COLOR_PANTALLA)
+        self.pantalla.fill(COLOR_PANTALLA)
 
         self.jugador1 = Paleta(
             MARGEN_LATERAL,               #COORDENADA X (LEFT)
@@ -98,32 +102,32 @@ class Pong:
             if estado_teclas[pygame.K_DOWN]:
                     self.jugador2.mover_paleta(Paleta.ABAJO)
             self.pelota.mover_pelota()
-            self.pantalla.fill(self._COLOR_PANTALLA)
+            self.pantalla.fill(COLOR_PANTALLA)
                    
-            
-            pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.jugador1)
-            pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.jugador2)
-            pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,self.pelota)
+            #Dibujo de las dos palas y de la pelota
+            pygame.draw.rect(self.pantalla,COLOR_BLANCO,self.jugador1)
+            pygame.draw.rect(self.pantalla,COLOR_BLANCO,self.jugador2)
+            pygame.draw.rect(self.pantalla,COLOR_BLANCO,self.pelota)
             
             #Dibujo del campo de tenis 
             self.pintar_campo()
 
             #Refresco de pantalla
             pygame.display.flip()
-            self.clock.tick(120)
+            self.clock.tick(60)
 
     #Este es el método para el que luego llamamos para dibujar el campo
     def pintar_campo(self):
-        for posicion in range(0, ALTO,45):
-                pygame.draw.line(self.pantalla,self._COLOR_BLANCO,
+        for posicion in range(0, ALTO,50):
+            pygame.draw.line(self.pantalla,COLOR_BLANCO,
                                 (ANCHO/2, posicion),
-                                (ANCHO/2,posicion + 25))
-        pygame.draw.rect(self.pantalla,self._COLOR_BLANCO,(70,45,500,390),2)
-        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,100),(567,100))
-        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(70,380),(567,380))
-        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(175,100),(175,380))
-        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(470,100),(470,380))
-        pygame.draw.line(self.pantalla,self._COLOR_BLANCO,(175,240),(470,240))
+                                (ANCHO/2,posicion + 29))
+        pygame.draw.rect(self.pantalla,COLOR_BLANCO,(70,45,500,390),2)
+        pygame.draw.line(self.pantalla,COLOR_BLANCO,(70,100),(567,100))
+        pygame.draw.line(self.pantalla,COLOR_BLANCO,(70,380),(567,380))
+        pygame.draw.line(self.pantalla,COLOR_BLANCO,(175,100),(175,380))
+        pygame.draw.line(self.pantalla,COLOR_BLANCO,(470,100),(470,380))
+        pygame.draw.line(self.pantalla,COLOR_BLANCO,(175,240),(470,240))
             
 if __name__ == "__main__":
     juego = Pong()
