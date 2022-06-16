@@ -9,9 +9,9 @@ COLOR_BLANCO = (255,255,255)
 COLOR_PANTALLA = (0,128,0)
 FPS = 60
 MARGEN_LATERAL = 30
-PUNTOS_PARTIDA = 3
+PUNTOS_PARTIDA = 1
 TAMANIO_PELOTA = 6
-VEL_MAX_PELOTA = 5
+VEL_MAX_PELOTA = 6
 VELOCIDAD_PALETA = 5
 
 class Paleta(pygame.Rect):
@@ -58,37 +58,58 @@ class Pelota(pygame.Rect):
 class Marcador:
     def __init__(self):
         self.inicializar()
+        self.fuente_marcador = pygame.font.SysFont("Sportsball",20)
+        self.fuente_ganador = pygame.font.SysFont("Sportsball",22)
 
     def comprobar_ganador(self):
         if self.partida_finalizada:
             return True
         if self.valor[0] == PUNTOS_PARTIDA:
-            print("Ha ganado el jugador 1")
+            self.mensaje_ganador = "Ha ganado el jugador 1"
             self.partida_finalizada = True
-        elif self.valor[1] == PUNTOS_PARTIDA:
-            print("Ha ganado el jugador 2")
+        elif self.valor[1] == PUNTOS_PARTIDA: 
+            self.mensaje_ganador = "Ha ganado el jugador 2"
             self.partida_finalizada = True
         return self.partida_finalizada
 
     def inicializar(self):
         self.valor = [0,0]
         self.partida_finalizada = False
+    
+    def pintar_marcador(self,pantalla):
+        texto = self.fuente_marcador.render(str(self.valor[0]),True,COLOR_BLANCO)
+        pos_x = (ANCHO/2-MARGEN_LATERAL-ANCHO_PALETA)/2-texto.get_width()/2+MARGEN_LATERAL+ANCHO_PALETA
+        pos_y = MARGEN_LATERAL-10
+        pygame.surface.Surface.blit(pantalla,texto,(pos_x,pos_y))
 
+        texto = self.fuente_marcador.render(str(self.valor[1]),True,COLOR_BLANCO)
+        pos_x = (ANCHO/2-MARGEN_LATERAL-ANCHO_PALETA)/2-texto.get_width()/2+ANCHO/2
+        pos_y = MARGEN_LATERAL-10
+        pygame.surface.Surface.blit(pantalla,texto,(pos_x,pos_y))
+
+        if self.partida_finalizada:
+            texto = self.fuente_ganador.render(self.mensaje_ganador,True,COLOR_BLANCO)
+            pos_x = ANCHO/2 - texto.get_width()/2
+            pos_y = ALTO/2 - texto.get_height()/2
+            pygame.surface.Surface.blit(pantalla,texto,(pos_x,pos_y))
+
+
+        
+        
 class Pong:
 
-    
     def __init__(self):
-        print("Construyendo un objeto pong")
         pygame.init()
+        pygame.font.init()
         self.pantalla = pygame.display.set_mode((ANCHO,ALTO))
+        pygame.display.set_caption("Juego del Pong")
         self.clock = pygame.time.Clock()
         self.pantalla.fill(COLOR_PANTALLA)
-
+        
         self.jugador1 = Paleta(
             MARGEN_LATERAL,               #COORDENADA X (LEFT)
             (ALTO-ALTO_PALETA)/2)         #COORDENADA Y (TOP)
                                       
-        
         self.jugador2 = Paleta(
             ANCHO - MARGEN_LATERAL - ANCHO_PALETA,
             (ALTO-ALTO_PALETA)/2)
@@ -97,24 +118,22 @@ class Pong:
 
         self.marcador = Marcador()
            
-
     def bucle_principal(self):
-        print("Estoy en el bucle principal")
         salir_juego = False
         while not salir_juego:
             eventos = pygame.event.get()
+        #Aquí va el atributo, bucle y métodos que tienen que ver con reconocimiento de teclas
             estado_teclas = pygame.key.get_pressed()
             for evento in eventos:
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_ESCAPE:
                         salir_juego = True
                     if evento.key == pygame.K_r:
-                        print("Nueva partida")
                         self.marcador.inicializar()
                 if evento.type == pygame.QUIT:
                     salir_juego = True
         
-        #Aquí tenemos creados los eventos que tienen que ver con pulsaciones de teclado    
+        #Aquí tenemos creados los eventos que tienen que ver con pulsaciones de teclado para poder jugar 
             if estado_teclas[pygame.K_a]:
                 self.jugador1.mover_paleta(Paleta.ARRIBA)
             if estado_teclas[pygame.K_z]:
@@ -128,13 +147,17 @@ class Pong:
                 self.pelota.mover_pelota()
                 self.colision_paletas()
                 self.comprobar_punto()
+            
 
             self.pantalla.fill(COLOR_PANTALLA)
-                   
+            
+
             #Dibujo de las dos palas y de la pelota
             pygame.draw.rect(self.pantalla,COLOR_BLANCO,self.jugador1)
             pygame.draw.rect(self.pantalla,COLOR_BLANCO,self.jugador2)
-            pygame.draw.rect(self.pantalla,COLOR_BLANCO,self.pelota)
+            pygame.draw.rect(self.pantalla,COLOR_BLANCO,self.pelota,0,TAMANIO_PELOTA//3)
+            
+            self.marcador.pintar_marcador(self.pantalla)
             
             #Dibujo del campo de tenis 
             self.pintar_campo()
@@ -143,6 +166,9 @@ class Pong:
             pygame.display.flip()
             self.clock.tick(FPS)
     
+
+         
+
     def colision_paletas(self):
         if self.jugador1.colliderect(self.pelota) or self.jugador2.colliderect(self.pelota):
             self.pelota.velocidad_x = -self.pelota.velocidad_x 
@@ -151,13 +177,13 @@ class Pong:
     def comprobar_punto(self):
             if self.pelota.x < 0:
                 self.marcador.valor[1] = self.marcador.valor[1] + 1
-                print(f"El nuevo marcador es {self.marcador.valor}")
+                #print(f"El nuevo marcador es {self.marcador.valor}")
                 self.pelota.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
                 self.iniciar_punto()
                 
             elif self.pelota.x > ANCHO:
                 self.marcador.valor[0] = self.marcador.valor[0] + 1
-                print(f"El nuevo marcador es {self.marcador.valor}")
+                #print(f"El nuevo marcador es {self.marcador.valor}")
                 self.pelota.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
                 self.iniciar_punto()
                 
@@ -186,5 +212,8 @@ class Pong:
 if __name__ == "__main__":
     juego = Pong()
     juego.bucle_principal()
+    
+
+
 
 
