@@ -2,14 +2,14 @@ from random import randint
 import pygame
 
 ALTO = 480
-ALTO_PALETA = 80
+ALTO_PALETA = 50
 ANCHO = 640
 ANCHO_PALETA = 5
 COLOR_BLANCO = (255,255,255)
 COLOR_PANTALLA = (0,128,0)
 FPS = 60
 MARGEN_LATERAL = 30
-PUNTOS_PARTIDA = 1
+PUNTOS_PARTIDA = 9
 TAMANIO_PELOTA = 6
 VEL_MAX_PELOTA = 6
 VELOCIDAD_PALETA = 5
@@ -39,10 +39,10 @@ class Pelota(pygame.Rect):
                                     (ALTO-TAMANIO_PELOTA)/2, 
                                     TAMANIO_PELOTA,TAMANIO_PELOTA)
     
-        valido_posicion_x = False
-        while not valido_posicion_x:
-            self.velocidad_x = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
-            valido_posicion_x = self.velocidad_x != 0
+        self.velocidad_x = 0
+        while self.velocidad_x == 0:
+            self.velocidad_x = randint(-VEL_MAX_PELOTA, VEL_MAX_PELOTA)
+        
         self.velocidad_y = randint(-VEL_MAX_PELOTA,VEL_MAX_PELOTA)
 
     def mover_pelota(self):
@@ -58,8 +58,8 @@ class Pelota(pygame.Rect):
 class Marcador:
     def __init__(self):
         self.inicializar()
-        self.fuente_marcador = pygame.font.SysFont("Sportsball",20)
-        self.fuente_ganador = pygame.font.SysFont("Sportsball",22)
+        self.fuente_marcador = pygame.font.SysFont("sportsball",20)
+        self.fuente_ganador = pygame.font.SysFont("sportsball",22)
 
     def comprobar_ganador(self):
         if self.partida_finalizada:
@@ -184,7 +184,7 @@ class Pong:
             elif self.pelota.x > ANCHO:
                 self.marcador.valor[0] = self.marcador.valor[0] + 1
                 #print(f"El nuevo marcador es {self.marcador.valor}")
-                self.pelota.velocidad_x = randint(-VEL_MAX_PELOTA,-1)
+                self.pelota.velocidad_x = randint(1,VEL_MAX_PELOTA)
                 self.iniciar_punto()
                 
             self.marcador.comprobar_ganador()
